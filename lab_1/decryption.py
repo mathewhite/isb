@@ -14,7 +14,7 @@ def calculate_frequence(text: str) -> dict:
 
     for symbol in text:
 
-        if symbol=='\n':
+        if symbol == "\n":
             continue
 
         if symbol in symbol_counts:
@@ -33,11 +33,14 @@ def calculate_frequence(text: str) -> dict:
 
         symbol_frequence[char] = frequence
 
-    sorted_frequence_list = sorted(symbol_frequence.items(), key=lambda item: item[1], reverse=True)
+    sorted_frequence_list = sorted(
+        symbol_frequence.items(), key=lambda item: item[1], reverse=True
+    )
 
     sorted_freq = dict(sorted_frequence_list)
 
     return sorted_freq
+
 
 def create_mapping(encrypt_frequence: dict, rus_frequence: dict) -> dict:
     """
@@ -82,22 +85,22 @@ def decrypt_text(encrypted_text: str, key: dict) -> str:
         else:
             decrypted_text.append(symbol)
 
-    return ''.join(decrypted_text)
+    return "".join(decrypted_text)
 
 
 def main():
-    with open('settings-2.json', mode="r", encoding='utf-8') as file:
-        settings= json.load(file)
+    with open("settings-2.json", mode="r", encoding="utf-8") as file:
+        settings = json.load(file)
 
-    russian_statistics= settings['russian_statistics']
-    with open(settings['initial_text'], mode="r", encoding='utf-8') as file:
+    russian_statistics = settings["russian_statistics"]
+    with open(settings["initial_text"], mode="r", encoding="utf-8") as file:
         initial_text = file.read()
-    output_path= settings['output_path']
-    key_path= settings['key_path']
-    decrypted_statistics= calculate_frequence(initial_text)
-    key= create_mapping(decrypted_statistics, russian_statistics)
-    text= decrypt_text(initial_text, key)
-    with open(output_path, mode="w", encoding='utf-8') as file:
+    output_path = settings["output_path"]
+    key_path = settings["key_path"]
+    decrypted_statistics = calculate_frequence(initial_text)
+    key = create_mapping(decrypted_statistics, russian_statistics)
+    text = decrypt_text(initial_text, key)
+    with open(output_path, mode="w", encoding="utf-8") as file:
         file.write(text)
 
 
