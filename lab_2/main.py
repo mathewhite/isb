@@ -9,6 +9,8 @@ def frequency_bit_test(sequence: str) -> float:
     :param sequence: битовая последовательность
     :return: Р-значение
     """
+    if not sequence:
+        raise ZeroDivisionError("последовательность пуста")
     stat = 1 / math.sqrt(len(sequence)) * (sequence.count("1") - sequence.count("0"))
     p_value = math.erfc(stat / math.sqrt(2))
     return p_value
@@ -20,6 +22,8 @@ def identical_consecutive_bit_test(sequence: str) -> float:
     :param sequence: битовая последовательность
     :return: Р-значение
     """
+    if not sequence:
+        raise ZeroDivisionError("последовательность пуста")
     n = len(sequence)
     percent_of_units = sequence.count("1") / n
     if abs(percent_of_units - 0.5) >= (2 / math.sqrt(n)):
@@ -33,16 +37,20 @@ def identical_consecutive_bit_test(sequence: str) -> float:
     return p_value
 
 
-def longest_sequence_in_block(sequence: str, p: list) -> float:
+def longest_sequence_in_block(sequence: str, p: list, block_size: int) -> float:
     """
     тест на самую длинную последовательность единиц в блоке
+    :param block_size: размер блока
     :param sequence: битовая последовательность
     :param p: теоретические вероятности
-    :return: З-значение
+    :return: P-значение
     """
+    if not sequence:
+        raise ZeroDivisionError("последовательность пуста")
     blocks = []
-    for i in range(0, len(sequence), 8):
-        block = sequence[i: i + 8]
+
+    for i in range(0, len(sequence), block_size):
+        block = sequence[i: i + block_size]
         blocks.append(block)
     v = [0, 0, 0, 0]
     for block in blocks:
@@ -76,12 +84,12 @@ def main():
         "cpp": {
             "frequency_bit_test": frequency_bit_test(cpp_seq),
             "identical_consecutive_bit_test": identical_consecutive_bit_test(cpp_seq),
-            "longest_sequence_in_block": longest_sequence_in_block(cpp_seq, settings["P"])
+            "longest_sequence_in_block": longest_sequence_in_block(cpp_seq, settings["P"], settings["block_size"])
         },
         "java": {
             "frequency_bit_test": frequency_bit_test(java_seq),
             "identical_consecutive_bit_test": identical_consecutive_bit_test(java_seq),
-            "longest_sequence_in_block": longest_sequence_in_block(java_seq, settings["P"])
+            "longest_sequence_in_block": longest_sequence_in_block(java_seq, settings["P"], settings["block_size"])
         }
     }
 
