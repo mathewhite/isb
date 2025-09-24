@@ -1,0 +1,6 @@
+{
+    "encrypted_text_file": "encrypted.txt",
+    "decrypted_text_file": "decrypted.txt",
+    "char_frequency_file": "frequency.json",
+    "key": "key.json"
+}
