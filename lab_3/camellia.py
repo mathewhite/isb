@@ -1,9 +1,9 @@
-import const
+import os
 
+from config import config
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
-import os
 
 
 class CamelliaCipher:
@@ -13,10 +13,10 @@ class CamelliaCipher:
         :param key: ключ шифрования
         """
         key_length = len(key) * 8
-        if key_length not in const.CAMELLIA_KEY_SIZES:
+        if key_length not in config["CAMELLIA_KEY_SIZES"]:
             raise ValueError(
                 f"Недопустимая длина ключа Camellia ({key_length} бит). "
-                f"Допустимые значения: {const.CAMELLIA_KEY_SIZES}"
+                f"Допустимые значения: {config["CAMELLIA_KEY_SIZES"]}"
             )
         self.key = key
 
@@ -27,7 +27,7 @@ class CamelliaCipher:
         :return: зашифрованные данные в формате IV + ciphertext
         """
 
-        iv = os.urandom(const.IV_SIZE)
+        iv = os.urandom(config["IV_SIZE"])
 
         padder = padding.PKCS7(128).padder()
         padded_data = padder.update(plaintext) + padder.finalize()
@@ -48,8 +48,8 @@ class CamelliaCipher:
         :param ciphertext: зашифрованные данные в формате IV + ciphertext
         :return: расшифрованный текст
         """
-        iv = ciphertext[:const.IV_SIZE]
-        actual_ciphertext = ciphertext[const.IV_SIZE:]
+        iv = ciphertext[:config["IV_SIZE"]]
+        actual_ciphertext = ciphertext[config["IV_SIZE"]:]
 
         cipher = Cipher(
             algorithms.Camellia(self.key),
@@ -71,9 +71,9 @@ class CamelliaCipher:
         :param key_size: размер ключа в битах
         :return: сгенерированный ключ
         """
-        if key_size not in const.CAMELLIA_KEY_SIZES:
+        if key_size not in config["CAMELLIA_KEY_SIZES"]:
             raise ValueError(
                 f"Недопустимый размер ключа ({key_size} бит). "
-                f"Допустимые значения: {const.CAMELLIA_KEY_SIZES}"
+                f"Допустимые значения: {config["CAMELLIA_KEY_SIZES"]}"
             )
         return os.urandom(key_size // 8)
