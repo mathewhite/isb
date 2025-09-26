@@ -1,5 +1,4 @@
-import const
-
+from config import config
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import hashes, serialization
@@ -25,8 +24,8 @@ class RSA:
 
     @staticmethod
     def save_rsa_keys(private_key, public_key,
-                      priv_path=const.PATH_TO_PRIVATE_KEY,
-                      pub_path=const.PATH_TO_PUBLIC_KEY):
+                      priv_path=config["PATH_TO_PRIVATE_KEY"],
+                      pub_path=config["PATH_TO_PUBLIC_KEY"]):
         """
         Сохранение RSA ключей в файлы
         :param private_key: закрытый ключ RSA
@@ -52,7 +51,7 @@ class RSA:
         return priv_pem, pub_pem
 
     @staticmethod
-    def load_rsa_public_key(pub_path=const.PATH_TO_PUBLIC_KEY):
+    def load_rsa_public_key(pub_path=config["PATH_TO_PUBLIC_KEY"]):
         """
         Загрузка открытого ключа RSA из файла
         :param pub_path: путь к файлу с открытым ключом
@@ -64,7 +63,7 @@ class RSA:
         return serialization.load_pem_public_key(pub_pem, backend=default_backend())
 
     @staticmethod
-    def load_rsa_private_key(priv_path=const.PATH_TO_PRIVATE_KEY):
+    def load_rsa_private_key(priv_path=config["PATH_TO_PRIVATE_KEY"]):
         """
         Загрузка закрытого ключа RSA из файла
         :param priv_path: путь к файлу с закрытым ключом
