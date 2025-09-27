@@ -1,51 +1,51 @@
+import argparse
+
 from helper import *
+from frequency_analis import *
+from decrypter import *
 
 
-def get_frequency(text: str) -> dict:
-    """
-    Вычисляет частоту встречаемости каждого символа в тексте.
-    :param text: входной текст
-    :return: словарь, ключи - символы, значения - их частоты
-    """
-    if not text:
-        raise ZeroDivisionError("файл пуст")
-    freq_dict = {}
-    for char in text:
-        if char.lower() in freq_dict:
-            freq_dict[char.lower()] += 1
-        else:
-            freq_dict[char.lower()] = 1
+def parse_arguments():
+    """Парсит аргументы из командной строки"""
+    defaults = load_json("config.json")
 
-    for char, count in freq_dict.items():
-        freq_dict[char] = count / len(text)
-    return dict(sorted(freq_dict.items(), key=lambda item: item[1], reverse=True))
+    parser = argparse.ArgumentParser(description='Анализ частот и дешифрование текста')
 
+    parser.add_argument('--encrypted-file',
+                        type=str,
+                        default=defaults['encrypted_text_file'],
+                        help='Путь к файлу с зашифрованным текстом')
 
-def decrypt(text: str, key: dict) -> str:
-    """
-    Заменяет символы в тексте согласно переданному ключу.
-    :param text: исходный текст
-    :param key: словарь замен
-    :return: новый текст, в котором символы заменены в соответствии с ключом
-    """
-    decrypted = ""
-    for char in text:
-        print(char)
-        decrypted_char = key.get(char)
-        if decrypted_char is None:
-            decrypted_char = char
-        decrypted += decrypted_char
-    return decrypted
+    parser.add_argument('--decrypted-file',
+                        type=str,
+                        default=defaults['decrypted_text_file'],
+                        help='Путь к файлу для сохранения расшифрованного текста')
+
+    parser.add_argument('--frequency-file',
+                        type=str,
+                        default=defaults['char_frequency_file'],
+                        help='Путь к файлу для сохранения частотного анализа')
+
+    parser.add_argument('--key-file',
+                        type=str,
+                        default=defaults['key'],
+                        help='Путь к файлу с ключом для дешифрования')
+
+    return parser.parse_args()
 
 
 def main():
-    settings = load_json("config.json")
-    encrypted_text = load_text(settings["encrypted_text_file"])
+    args = parse_arguments()
+    encrypted_text = load_text(args.encrypted_file)
     frequency = get_frequency(encrypted_text)
-    write_json(frequency, settings["char_frequency_file"])
-    key = load_json(settings["key"])
+    write_json(frequency, args.frequency_file)
+    print(f"Частотный анализ сохранен в {args.frequency_file}")
+
+    key = load_json(args.key_file)
     decrypted_text = decrypt(encrypted_text, key)
-    write_text(decrypted_text, settings["decrypted_text_file"])
+
+    write_text(decrypted_text, args.decrypted_file)
+    print(f"Расшифрованный текст сохранен в {args.decrypted_file}")
 
 
 if __name__ == "__main__":
