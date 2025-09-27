@@ -1,56 +1,56 @@
+import argparse
+
 from helper import *
+from caesar import *
 
 
-def caesar_cipher(decrypted: str, key: int, alphabet: str) -> str:
-    """
-        Предназначена зашифровки текста по заданному значению сдвига
-        :param alphabet: алфавит с которым работает шифр
-        :param decrypted: Начальный текст
-        :param key: значение сдвига
-        :return: зашифрованный текст
-    """
-    encrypted = ""
-    length = len(alphabet)
-    for char in decrypted:
-        if char == '\n':
-            encrypted += char
-            continue
-        elif char not in alphabet:
-            encrypted += char
-            continue
-        encrypted += alphabet[(alphabet.find(char) + key) % length]
-    return encrypted
+def parse_arguments():
+    """Парсит аргументы из командной строки"""
+    defaults = load_json("config.json")
 
+    parser = argparse.ArgumentParser(description='Шифр Цезаря - шифрование и дешифрование текста')
 
-def caesar_decipher(encrypted: str, key: int, alphabet: str) -> str:
-    """
-        Предназначена зашифровки текста по заданному значению сдвига
-        :param alphabet: алфавит с которым работает шифр
-        :param encrypted: Начальный текст
-        :param key: значение сдвига
-        :return: расшифрованный текст
-    """
-    decrypted = ""
-    length = len(alphabet)
-    for char in encrypted:
-        if char == '\n':
-            decrypted += char
-            continue
-        elif char not in alphabet:
-            decrypted += char
-            continue
-        decrypted += alphabet[(alphabet.find(char) - key) % length]
-    return decrypted
+    parser.add_argument('--mode',
+                        choices=['encrypt', 'decrypt'],
+                        default='encrypt',
+                        help='Режим работы: encrypt (шифрование) или decrypt (дешифрование)')
+
+    parser.add_argument('--input-file',
+                        type=str,
+                        default=defaults['decrypted_text_file'],
+                        help='Путь к входному файлу с текстом')
+
+    parser.add_argument('--output-file',
+                        type=str,
+                        default=defaults['encrypted_text_file'],
+                        help='Путь к выходному файлу для результата')
+
+    parser.add_argument('--shift',
+                        type=int,
+                        default=defaults['shift'],
+                        help='Величина сдвига для шифра Цезаря')
+
+    parser.add_argument('--alphabet',
+                        type=str,
+                        default=defaults['alphabet'],
+                        help='Алфавит для шифрования')
+
+    return parser.parse_args()
 
 
 def main():
-    settings = load_json("config.json")
-    decrypted = load_text(settings["decrypted_text_file"]).upper()
-    alphabet = settings["alphabet"]
-    way_to_save = settings["encrypted_text_file"]
-    shift = settings["shift"]
-    encrypted = caesar_cipher(decrypted, shift, alphabet)
-    write_text(encrypted, way_to_save)
+    args = parse_arguments()
+
+    text = load_text(args.input_file).upper()
+
+    if args.mode == 'encrypt':
+        result = caesar_cipher(text, args.shift, args.alphabet)
+        write_text(result, args.output_file)
+        print(f"Текст зашифрован и сохранен в {args.output_file}")
+    else:
+        result = caesar_decipher(text, args.shift, args.alphabet)
+        write_text(result, args.output_file)
+        print(f"Текст расшифрован и сохранен в {args.output_file}")
 
 
 if __name__ == "__main__":
